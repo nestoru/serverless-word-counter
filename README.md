@@ -2,7 +2,31 @@
 
 A serverless application that analyzes text frequency and provides download links for results.
 
-Most importantly a POC to demonstrate the complexities behind platform engineering.
+## Purpose
+
+This project serves as a Proof of Concept (POC) to demonstrate the complexities behind platform engineering, specifically:
+
+1. **Context-Based Infrastructure**: 
+   - How every environment (developer, test, prod) needs isolated resources
+   - Why traditional environment concepts are evolving
+
+2. **Developer Experience**:
+   - Local development in a serverless world
+   - State management across different contexts
+   - Clean workspace management
+
+3. **Tool Integration**:
+   - How Terraform, Make, and Bash complement each other
+   - Why Infrastructure as Code alone isn't enough
+   - Importance of traditional DevOps tools in serverless
+
+4. **Operational Concerns**:
+   - Resource isolation and cleanup
+   - State persistence
+   - Monitoring and observability
+   - Cost management
+
+Despite its simple functionality, this project showcases real-world platform engineering challenges and solutions.
 
 ## Project Structure
 
