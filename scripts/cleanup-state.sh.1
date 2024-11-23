@@ -1,0 +1,56 @@
+#!/bin/bash
+set -e
+
+# Check if context file exists
+if [ ! -f "context/context.tfvars" ]; then
+    echo "Error: context/context.tfvars not found"
+    exit 1
+fi
+
+# Read variables from context
+CONTEXT_ID=$(awk -F= '/context_id/ {gsub(/"/, "", $2); print $2}' context/context.tfvars | xargs)
+AWS_REGION=$(awk -F= '/aws_region/ {gsub(/"/, "", $2); print $2}' context/context.tfvars | xargs)
+
+echo "WARNING: This will delete all Terraform state management infrastructure for:"
+echo "Context ID: ${CONTEXT_ID}"
+echo "Region: ${AWS_REGION}"
+echo
+echo "This action cannot be undone. Type 'yes' to continue:"
+read -r response
+
+if [ "$response" != "yes" ]; then
+    echo "Aborted."
+    exit 1
+fi
+
+# Empty the bucket first
+BUCKET_NAME="${CONTEXT_ID}-terraform-state"
+# List all object versions in the bucket
+echo "Listing object versions in the bucket: $BUCKET_NAME"
+OBJECT_VERSIONS=$(aws s3api list-object-versions --bucket $BUCKET_NAME --region $AWS_REGION --query '{ Items: versions[].{ Key: key, VersionId: versionId } }' --output text)
+
+# Delete each object version
+echo "Deleting object versions..."
+while read -r line; do
+    KEY=$(echo $line | cut -f1)
+    VERSION_ID=$(echo $line | cut -f2)
+    echo "Deleting object: $KEY, version: $VERSION_ID"
+    if ! aws s3api delete-object --bucket $BUCKET_NAME --key $KEY --version-id $VERSION_ID --region $AWS_REGION; then
+        echo "Error deleting object version: $KEY, $VERSION_ID"
+        exit 1
+    fi
+done <<< "$OBJECT_VERSIONS"
+
+# Delete the bucket
+echo "Deleting the bucket: $BUCKET_NAME"
+aws s3api delete-bucket \
+    --bucket ${BUCKET_NAME} \
+    --region ${AWS_REGION}
+
+# Delete the DynamoDB table
+echo "Deleting DynamoDB table..."
+aws dynamodb delete-table \
+    --table-name "${CONTEXT_ID}-terraform-locks" \
+    --region ${AWS_REGION}
+
+echo "State management infrastructure deleted successfully!"

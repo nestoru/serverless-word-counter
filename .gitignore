@@ -1,0 +1,19 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+# Environment variables
+context/*.tfvars
+!context/*.tfvars.example
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+venv
+
+# Build
+build/
+*.zip

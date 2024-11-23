@@ -1,0 +1,9 @@
+# Copy this file to context.tfvars and update values
+aws_region = "us-west-2"
+
+# Examples of context_id:
+# - Individual developer: "jsmith"
+# - Developer environment: "jsmith_dev"
+# - Team test environment: "teamA_test"
+# - Production: "prod"
+context_id = "your_context_id"
