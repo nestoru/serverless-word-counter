@@ -39,7 +39,6 @@ Despite its simple functionality, this project showcases real-world platform eng
 ├── requirements.txt
 ├── scripts
 │   ├── cleanup-state.sh
-│   ├── cleanup-state.sh.1
 │   ├── setup-state.sh
 │   └── watch-logs.sh
 ├── src
